@@ -21,6 +21,8 @@ package com.taobao.weex.ui.component;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.util.ArrayMap;
+import android.support.v4.util.SimpleArrayMap;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -213,29 +215,31 @@ public abstract class AbstractEditComponent extends WXComponent<WXEditText> {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-          if (mIgnoreNextOnInputEvent) {
-            mIgnoreNextOnInputEvent = false;
-          }
-
           if (mBeforeText.equals(s.toString())) {
             return;
           }
 
           mBeforeText = s.toString();
 
-          if(!hasChangeForDefaultValue){
-            if (getDomObject() != null && getDomObject().getAttrs() != null) {
-              Object val = getDomObject().getAttrs().get(Constants.Name.VALUE);
-              String valString = WXUtils.getString(val, null);
-              if (mBeforeText != null && mBeforeText.equals(valString)) {
+          if (getDomObject() != null && getDomObject().getAttrs() != null) {
+            Object val = getDomObject().getAttrs().get(Constants.Name.VALUE);
+            String valString = WXUtils.getString(val, null);
+            if (mBeforeText != null && mBeforeText.equals(valString)) {
+              if (!hasChangeForDefaultValue) {
                 hasChangeForDefaultValue = true;
                 return;
               }
+            }else{
+              final WXDomObject domObject = WXSDKManager.getInstance().getWXDomManager().getDomContext(getInstanceId()).getDomByRef(getRef());
+              domObject.updateAttr(new ArrayMap<String,Object>(){{
+                this.put(Constants.Name.VALUE, mBeforeText);
+              }});
             }
           }
-
           if (!mIgnoreNextOnInputEvent) {
             fireEvent(Constants.Event.INPUT, s.toString());
+          }else{
+            mIgnoreNextOnInputEvent = false;
           }
         }
 
@@ -451,7 +455,10 @@ public abstract class AbstractEditComponent extends WXComponent<WXEditText> {
       return;
     }
 
-    mIgnoreNextOnInputEvent = true;
+    final String last = view.getText().toString();
+    if((TextUtils.isEmpty(last)&&!TextUtils.isEmpty(value))|| !last.equals(value)) {
+      mIgnoreNextOnInputEvent = true;
+    }
     view.setText(value);
     view.setSelection(value == null ? 0 : value.length());
   }

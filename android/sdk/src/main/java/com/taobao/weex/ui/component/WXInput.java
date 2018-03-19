@@ -40,6 +40,13 @@ public class WXInput extends AbstractEditComponent{
   }
 
   @Override
+  protected void onHostViewInitialized(WXEditText host) {
+    host.setAllowDisableMovement(false);
+    super.onHostViewInitialized(host);
+  }
+
+
+  @Override
   protected void appleStyleAfterCreated(WXEditText editText) {
     super.appleStyleAfterCreated(editText);
     editText.setSingleLine();//default use single line , same to ios

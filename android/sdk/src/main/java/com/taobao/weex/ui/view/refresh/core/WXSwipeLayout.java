@@ -156,7 +156,7 @@ public class WXSwipeLayout extends FrameLayout implements NestedScrollingParent,
 
     mNestedScrollingParentHelper = new NestedScrollingParentHelper(this);
     mNestedScrollingChildHelper = new NestedScrollingChildHelper(this);
-    setNestedScrollingEnabled(false);
+    setNestedScrollingEnabled(true);
 
     if (isInEditMode() && attrs == null) {
       return;
@@ -672,6 +672,13 @@ public class WXSwipeLayout extends FrameLayout implements NestedScrollingParent,
     mCurrentAction = -1;
     //TODO updateLoadText
   }
+  @Override
+  public boolean canScrollVertically(int direction) {
+    if (direction == 0) {
+      return false;
+    }
+    return direction < 0 ? canChildScrollUp() : canChildScrollDown();
+  }
 
   /**
    * Whether child view can scroll up
@@ -768,6 +775,7 @@ public class WXSwipeLayout extends FrameLayout implements NestedScrollingParent,
 
   public void setPullLoadEnable(boolean mPullLoadEnable) {
     this.mPullLoadEnable = mPullLoadEnable;
+    setNestedScrollingEnabled(!this.mPullRefreshEnable && !this.mPullLoadEnable);
   }
 
   public boolean isPullRefreshEnable() {
@@ -776,6 +784,7 @@ public class WXSwipeLayout extends FrameLayout implements NestedScrollingParent,
 
   public void setPullRefreshEnable(boolean mPullRefreshEnable) {
     this.mPullRefreshEnable = mPullRefreshEnable;
+    setNestedScrollingEnabled(!this.mPullRefreshEnable && !this.mPullLoadEnable);
   }
 
   public boolean isRefreshing() {

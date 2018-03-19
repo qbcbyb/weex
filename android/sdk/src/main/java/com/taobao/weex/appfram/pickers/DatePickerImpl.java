@@ -106,9 +106,10 @@ public class DatePickerImpl {
             }
         });
 
-        setButtonText(dialog, DialogInterface.BUTTON_NEGATIVE, String.valueOf(extras.get("cancelTitle")));
-        setButtonText(dialog, DialogInterface.BUTTON_POSITIVE, String.valueOf(extras.get("confirmTitle")));
-
+        if(extras!=null) {
+            setButtonText(dialog, DialogInterface.BUTTON_NEGATIVE, String.valueOf(extras.get("cancelTitle")));
+            setButtonText(dialog, DialogInterface.BUTTON_POSITIVE, String.valueOf(extras.get("confirmTitle")));
+        }
         dialog.show();
     }
 
@@ -138,9 +139,10 @@ public class DatePickerImpl {
             }
         });
 
-        setButtonText(dialog, DialogInterface.BUTTON_NEGATIVE, String.valueOf(extras.get("cancelTitle")));
-        setButtonText(dialog, DialogInterface.BUTTON_POSITIVE, String.valueOf(extras.get("confirmTitle")));
-
+        if(extras!=null) {
+            setButtonText(dialog, DialogInterface.BUTTON_NEGATIVE, String.valueOf(extras.get("cancelTitle")));
+            setButtonText(dialog, DialogInterface.BUTTON_POSITIVE, String.valueOf(extras.get("confirmTitle")));
+        }
         dialog.show();
     }
 

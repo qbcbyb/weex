@@ -30,8 +30,8 @@ import android.widget.FrameLayout;
 import com.taobao.weex.WXEnvironment;
 import com.taobao.weex.WXSDKInstance;
 import com.taobao.weex.WXSDKManager;
-import com.taobao.weex.annotation.Component;
 import com.taobao.weex.adapter.URIAdapter;
+import com.taobao.weex.annotation.Component;
 import com.taobao.weex.common.Constants;
 import com.taobao.weex.dom.WXDomObject;
 import com.taobao.weex.ui.view.WXVideoView;
@@ -44,7 +44,11 @@ import java.util.Map;
 
 public class WXVideo extends WXComponent<FrameLayout> {
 
+  public static final String NO_NEED_SHOW_PROGRESS = "noNeedShowProgress";
+  public static final String CONTROLS = "controls";
   private boolean mAutoPlay;
+  private boolean mNoNeedShowProgress = false;
+  private boolean mControls = true;
   private WXVideoView.Wrapper mWrapper;
 
   /**
@@ -185,6 +189,7 @@ public class WXVideo extends WXComponent<FrameLayout> {
 
   @Override
   protected boolean setProperty(String key, Object param) {
+    Boolean result;
     switch (key) {
       case Constants.Name.SRC:
         String src = WXUtils.getString(param, null);
@@ -193,9 +198,21 @@ public class WXVideo extends WXComponent<FrameLayout> {
         }
         return true;
       case Constants.Name.AUTO_PLAY:
-        Boolean result = WXUtils.getBoolean(param, null);
+        result = WXUtils.getBoolean(param, null);
         if (result != null) {
           setAutoPlay(result);
+        }
+        return true;
+      case NO_NEED_SHOW_PROGRESS:
+        result = WXUtils.getBoolean(param, null);
+        if (result != null) {
+          setNoNeedShowProgress(result);
+        }
+        return true;
+      case CONTROLS:
+        result = WXUtils.getBoolean(param, true);
+        if (result != null) {
+          setControls(result);
         }
         return true;
       case Constants.Name.PLAY_STATUS:
@@ -217,8 +234,24 @@ public class WXVideo extends WXComponent<FrameLayout> {
     if (!TextUtils.isEmpty(src)) {
       WXSDKInstance instance = getInstance();
       mWrapper.setVideoURI(instance.rewriteUri(Uri.parse(src), URIAdapter.VIDEO));
-      mWrapper.getProgressBar().setVisibility(View.VISIBLE);
+      if(!mNoNeedShowProgress) {
+        mWrapper.getProgressBar().setVisibility(mNoNeedShowProgress ? View.GONE : View.VISIBLE);
+      }
     }
+  }
+
+  @WXComponentProp(name = NO_NEED_SHOW_PROGRESS)
+  public void setNoNeedShowProgress(boolean noNeedShowProgress) {
+    this.mNoNeedShowProgress=noNeedShowProgress;
+    if(noNeedShowProgress){
+      mWrapper.getProgressBar().setVisibility(View.GONE);
+    }
+  }
+
+  @WXComponentProp(name = CONTROLS)
+  public void setControls(boolean controls) {
+    this.mControls=controls;
+    mWrapper.setControls(controls);
   }
 
   @WXComponentProp(name = Constants.Name.AUTO_PLAY)
@@ -247,8 +280,7 @@ public class WXVideo extends WXComponent<FrameLayout> {
     } else if ((mError || mStopped) && playstatus.equals(Constants.Value.PLAY)) {
       mError = false;
       mWrapper.resume();
-
-      mWrapper.getProgressBar().setVisibility(View.VISIBLE);
+      mWrapper.getProgressBar().setVisibility(mNoNeedShowProgress ? View.GONE : View.VISIBLE);
     }
   }
 }

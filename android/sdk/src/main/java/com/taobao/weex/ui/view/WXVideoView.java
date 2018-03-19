@@ -101,6 +101,7 @@ public class WXVideoView extends VideoView implements WXGestureObservable {
     private MediaPlayer.OnErrorListener mOnErrorListener;
     private MediaPlayer.OnCompletionListener mOnCompletionListener;
     private WXVideoView.VideoPlayListener mVideoPlayListener;
+    private boolean controls=true;
 
 
     public Wrapper(Context context) {
@@ -158,7 +159,7 @@ public class WXVideoView extends VideoView implements WXGestureObservable {
     public
     @Nullable
     MediaController getMediaController() {
-      return mMediaController;
+      return controls ? mMediaController : null;
     }
 
     public void setVideoURI(Uri uri) {
@@ -245,6 +246,8 @@ public class WXVideoView extends VideoView implements WXGestureObservable {
       mMediaController = controller;
       mVideoView = video;
 
+      setControls(controls);
+
       if(mUri != null) {
         setVideoURI(mUri);
       }
@@ -275,6 +278,13 @@ public class WXVideoView extends VideoView implements WXGestureObservable {
     public void onGlobalLayout() {
       if(createVideoViewIfVisible()){
         removeSelfFromViewTreeObserver();
+      }
+    }
+
+    public void setControls(boolean controls) {
+      this.controls = controls;
+      if (mVideoView != null) {
+        mVideoView.setMediaController(controls ? mMediaController : null);
       }
     }
   }
